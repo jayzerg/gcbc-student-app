@@ -349,8 +349,56 @@ async function showGradingGrid(period) {
         }
     });
     
-    tbody.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-gray-500">No data available for ' + period + ' period</td></tr>';
+    // Load and display student data for grading
+    await loadGradingData(period);
+    
     grid.classList.remove('hidden');
+}
+
+async function loadGradingData(period = '') {
+    try {
+        const response = await fetch(`${API_BASE}/students`);
+        let students = await response.json();
+        
+        // Filter only active students for grading
+        students = students.filter(student => (student.status || 'PENDING') === 'ACTIVE');
+        
+        displayGradingData(students, period);
+    } catch (error) {
+        console.error('Error loading grading data:', error);
+        const tbody = document.getElementById('gradingTableBody');
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-red-500 font-medium tracking-wide">Error loading student data</td></tr>';
+    }
+}
+
+function displayGradingData(students, period = '') {
+    const tbody = document.getElementById('gradingTableBody');
+    tbody.innerHTML = '';
+
+    if (students.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium tracking-wide">No active students found</td></tr>';
+        return;
+    }
+
+    students.forEach((student, index) => {
+        // Format full name with middle name if available
+        const middleName = student.middleName ? ` ${student.middleName}` : '';
+        const fullName = `${student.lastName}, ${student.firstName}${middleName}`;
+        
+        const row = tbody.insertRow();
+        row.className = 'hover:bg-slate-50 transition-colors duration-200 border-b border-slate-200';
+        row.innerHTML = `
+            <td class="px-6 py-4 text-sm font-bold text-slate-700 text-center">${index + 1}</td>
+            <td class="px-6 py-4 text-sm font-semibold text-blue-600">${student.studentId}</td>
+            <td class="px-6 py-4 text-sm font-semibold text-slate-800">${fullName}</td>
+            <td class="px-6 py-4 text-sm font-medium text-amber-600 text-center bg-amber-50 rounded-md border border-amber-200">
+                <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold tracking-wide">TBD</span>
+            </td>
+            <td class="px-6 py-4 text-sm font-medium text-slate-600 text-center italic">
+                <span class="text-slate-400">— No remarks yet —</span>
+            </td>
+        `;
+    });
 }
 
 // ID column sorting
