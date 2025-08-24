@@ -35,7 +35,17 @@ const Student = mongoose.model('Student', studentSchema);
 
 // Serve main HTML file for root route
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Route for dashboard (protected)
+app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'student-masterlist.html'));
+});
+
+// Route for admin setup
+app.get('/admin-setup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin-setup.html'));
 });
 
 // Routes
@@ -80,9 +90,15 @@ app.delete('/api/students/:id', async (req, res) => {
   }
 });
 
-// Catch-all handler: send back React's index.html file for any non-API routes
+// Catch-all handler: serve login page for non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'student-masterlist.html'));
+  // If it's an API route, return 404
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
+  
+  // For all other routes, serve the login page
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 

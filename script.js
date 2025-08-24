@@ -1,7 +1,54 @@
 const API_BASE = '/api';
 
+// Authentication helper functions
+function isAuthenticated() {
+    const teacher = localStorage.getItem('currentTeacher');
+    return teacher !== null;
+}
+
+function getCurrentTeacher() {
+    const teacher = localStorage.getItem('currentTeacher');
+    return teacher ? JSON.parse(teacher) : null;
+}
+
+function displayWelcomeMessage() {
+    const teacher = getCurrentTeacher();
+    if (teacher) {
+        console.log(`Welcome, ${teacher.firstName} ${teacher.lastName}!`);
+    }
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('currentTeacher');
+        window.location.href = 'login.html';
+    }
+}
+
+function updateTeacherInfo() {
+    const teacher = getCurrentTeacher();
+    if (teacher) {
+        const teacherInfo = document.getElementById('teacherInfo');
+        const teacherName = document.getElementById('teacherName');
+        
+        if (teacherInfo && teacherName) {
+            teacherName.textContent = `${teacher.firstName} ${teacher.lastName}`;
+            teacherInfo.classList.remove('hidden');
+        }
+    }
+}
+
 // Load students on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication first
+    if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Initialize app
+    displayWelcomeMessage();
+    updateTeacherInfo();
     loadStudents();
 });
 
