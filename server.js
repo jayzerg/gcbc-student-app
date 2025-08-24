@@ -33,6 +33,11 @@ const Student = mongoose.model('Student', studentSchema);
 
 
 
+// Serve main HTML file for root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'student-masterlist.html'));
+});
+
 // Routes
 app.get('/api/students', async (req, res) => {
   try {
@@ -73,6 +78,11 @@ app.delete('/api/students/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'student-masterlist.html'));
 });
 
 
