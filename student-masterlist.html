@@ -646,6 +646,7 @@
                                 <thead>
                                     <tr class="bg-gradient-to-r from-slate-100 via-blue-50 to-indigo-100 border-b-2 border-slate-300">
                                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 tracking-wide">NO.</th>
+                                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 tracking-wide">STUDENT ID</th>
                                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 tracking-wide">FULL NAME</th>
                                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 tracking-wide">FINAL GRADE</th>
                                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 tracking-wide">REMARKS</th>
@@ -1704,7 +1705,7 @@
             });
             
             // Show blank grid for all periods
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-slate-500 font-medium tracking-wide">No data available for ' + period + ' period</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium tracking-wide">No data available for ' + period + ' period</td></tr>';
             
             grid.classList.remove('hidden');
         }
@@ -1735,6 +1736,7 @@
                 row.className = 'hover:bg-slate-50 transition-colors duration-200 border-b border-slate-200';
                 row.innerHTML = `
                     <td class="px-6 py-4 text-sm font-bold text-slate-700 text-center">${index + 1}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-blue-600">${student.studentId}</td>
                     <td class="px-6 py-4 text-sm font-semibold text-slate-800">${fullName}</td>
                     <td class="px-6 py-4 text-sm font-medium text-slate-600 text-center">—</td>
                     <td class="px-6 py-4 text-sm font-medium text-slate-600 text-center">—</td>
