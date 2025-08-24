@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Teacher Login Issue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">Teacher Login Debug</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Quick Actions -->
+            <div class="space-y-3">
+                <button onclick="setupAccounts()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    1. Setup Default Accounts
+                </button>
+                
+                <button onclick="debugTeacherLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    2. Debug teacher@gcbc.edu Login
+                </button>
+                
+                <button onclick="showAllTeachers()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    3. Show All Teachers
+                </button>
+                
+                <button onclick="testActualLogin()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    4. Test Actual Login Logic
+                </button>
+            </div>
+            
+            <!-- Manual Test Form -->
+            <div class="border rounded-lg p-4">
+                <h3 class="font-bold mb-3">Manual Login Test</h3>
+                <form onsubmit="manualTest(event)">
+                    <div class="mb-3">
+                        <label class="block text-sm font-bold mb-1">Email:</label>
+                        <input type="email" id="testEmail" value="teacher@gcbc.edu" class="w-full px-3 py-2 border rounded">
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-sm font-bold mb-1">Password:</label>
+                        <input type="password" id="testPassword" value="teacher123" class="w-full px-3 py-2 border rounded">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Test Manual Login
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="output" class="mt-6 p-4 bg-gray-100 rounded-lg min-h-64 max-h-96 overflow-y-auto">
+            <p class="text-gray-600">Click buttons above to debug the login issue...</p>
+        </div>
+    </div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const colors = {
+                info: 'text-blue-700',
+                success: 'text-green-700',
+                error: 'text-red-700',
+                warning: 'text-yellow-700'
+            };
+            output.innerHTML += `<p class="text-sm mb-1 ${colors[type] || colors.info}">${message}</p>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clear() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        function setupAccounts() {
+            clear();
+            log('🔧 Setting up default accounts...', 'info');
+            
+            const defaultTeachers = [
+                {
+                    id: '1',
+                    firstName: 'System',
+                    lastName: 'Administrator',
+                    email: 'admin@gcbc.edu',
+                    department: 'Information Technology',
+                    password: 'admin123',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: '2',
+                    firstName: 'Demo',
+                    lastName: 'Teacher',
+                    email: 'teacher@gcbc.edu',
+                    department: 'Computer Science',
+                    password: 'teacher123',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            localStorage.setItem('teachers', JSON.stringify(defaultTeachers));
+            log('✅ Default accounts created!', 'success');
+            log('📝 Admin: admin@gcbc.edu / admin123', 'success');
+            log('📝 Teacher: teacher@gcbc.edu / teacher123', 'success');
+        }
+        
+        function debugTeacherLogin() {
+            clear();
+            log('🔍 Debugging teacher@gcbc.edu login...', 'info');
+            
+            const email = 'teacher@gcbc.edu';
+            const password = 'teacher123';
+            
+            // Check if teachers exist
+            const teachersStr = localStorage.getItem('teachers');
+            log(`📚 Teachers storage: ${teachersStr ? 'Found' : 'Empty'}`, teachersStr ? 'success' : 'error');
+            
+            if (!teachersStr) {
+                log('❌ No teachers found in localStorage!', 'error');
+                log('💡 Click "Setup Default Accounts" first', 'warning');
+                return;
+            }
+            
+            const teachers = JSON.parse(teachersStr);
+            log(`👥 Total teachers: ${teachers.length}`, 'info');
+            
+            // Find the specific teacher
+            const targetTeacher = teachers.find(t => t.email === email);
+            if (targetTeacher) {
+                log('✅ Found teacher account:', 'success');
+                log(`   📧 Email: "${targetTeacher.email}"`, 'info');
+                log(`   🔒 Password: "${targetTeacher.password}"`, 'info');
+                log(`   👤 Name: ${targetTeacher.firstName} ${targetTeacher.lastName}`, 'info');
+                
+                // Check password match
+                const passwordMatch = targetTeacher.password === password;
+                log(`🔐 Password match: ${passwordMatch ? '✅ YES' : '❌ NO'}`, passwordMatch ? 'success' : 'error');
+                
+                if (!passwordMatch) {
+                    log(`Expected: "${password}"`, 'error');
+                    log(`Stored: "${targetTeacher.password}"`, 'error');
+                    log(`Length check: Expected ${password.length}, Stored ${targetTeacher.password.length}`, 'error');
+                }
+            } else {
+                log('❌ Teacher account NOT found!', 'error');
+                log('🔍 Available emails:', 'warning');
+                teachers.forEach((t, i) => {
+                    log(`   ${i + 1}. "${t.email}"`, 'warning');
+                });
+            }
+        }
+        
+        function showAllTeachers() {
+            clear();
+            log('👥 All teachers in storage:', 'info');
+            
+            const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+            if (teachers.length === 0) {
+                log('❌ No teachers found!', 'error');
+                return;
+            }
+            
+            teachers.forEach((teacher, index) => {
+                log(`\n👤 Teacher ${index + 1}:`, 'info');
+                log(`   ID: ${teacher.id}`, 'info');
+                log(`   Name: ${teacher.firstName} ${teacher.lastName}`, 'info');
+                log(`   Email: "${teacher.email}"`, 'info');
+                log(`   Password: "${teacher.password}"`, 'info');
+                log(`   Department: ${teacher.department}`, 'info');
+            });
+        }
+        
+        function testActualLogin() {
+            clear();
+            log('🧪 Testing actual login logic...', 'info');
+            
+            const email = 'teacher@gcbc.edu';
+            const password = 'teacher123';
+            
+            // Simulate the exact login logic from login.html
+            const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+            log(`📚 Teachers array length: ${teachers.length}`, 'info');
+            
+            const teacher = teachers.find(t => t.email === email && t.password === password);
+            
+            if (teacher) {
+                log('✅ LOGIN SUCCESS!', 'success');
+                log(`🎯 Found teacher: ${teacher.firstName} ${teacher.lastName}`, 'success');
+                
+                // Test session creation
+                const session = {
+                    id: teacher.id,
+                    firstName: teacher.firstName,
+                    lastName: teacher.lastName,
+                    email: teacher.email,
+                    department: teacher.department,
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('currentTeacher', JSON.stringify(session));
+                log('🎫 Session created successfully!', 'success');
+                
+            } else {
+                log('❌ LOGIN FAILED!', 'error');
+                
+                // Debug each teacher
+                log('🔍 Checking each teacher:', 'warning');
+                teachers.forEach((t, i) => {
+                    const emailMatch = t.email === email;
+                    const passwordMatch = t.password === password;
+                    log(`Teacher ${i + 1}: email ${emailMatch ? '✅' : '❌'} password ${passwordMatch ? '✅' : '❌'}`, 'warning');
+                    if (!emailMatch) log(`   Expected email: "${email}" vs Stored: "${t.email}"`, 'error');
+                    if (!passwordMatch) log(`   Expected password: "${password}" vs Stored: "${t.password}"`, 'error');
+                });
+            }
+        }
+        
+        function manualTest(event) {
+            event.preventDefault();
+            clear();
+            
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            log(`🔧 Manual test with: "${email}" / "${password}"`, 'info');
+            
+            const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+            const teacher = teachers.find(t => t.email === email && t.password === password);
+            
+            if (teacher) {
+                log('✅ MANUAL TEST SUCCESS!', 'success');
+            } else {
+                log('❌ MANUAL TEST FAILED!', 'error');
+                
+                // Show comparison
+                teachers.forEach((t, i) => {
+                    log(`Teacher ${i + 1}:`, 'warning');
+                    log(`   Email: "${t.email}" ${t.email === email ? '✅' : '❌'}`, 'warning');
+                    log(`   Password: "${t.password}" ${t.password === password ? '✅' : '❌'}`, 'warning');
+                });
+            }
+        }
+        
+        // Auto-run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(showAllTeachers, 500);
+        });
+    </script>
+</body>
+</html>
