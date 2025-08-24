@@ -31,6 +31,18 @@ const studentSchema = new mongoose.Schema({
 
 const Student = mongoose.model('Student', studentSchema);
 
+// Teacher Schema
+const teacherSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  department: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Teacher = mongoose.model('Teacher', teacherSchema);
+
 
 
 // Serve main HTML file for root route
@@ -48,7 +60,98 @@ app.get('/admin-setup', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-setup.html'));
 });
 
-// Routes
+// Teacher Authentication Routes
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const teacher = await Teacher.findOne({ email, password });
+    
+    if (teacher) {
+      // Return teacher data for session
+      res.json({
+        success: true,
+        teacher: {
+          id: teacher._id,
+          firstName: teacher.firstName,
+          lastName: teacher.lastName,
+          email: teacher.email,
+          department: teacher.department
+        }
+      });
+    } else {
+      res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/teachers', async (req, res) => {
+  try {
+    const teacher = new Teacher(req.body);
+    await teacher.save();
+    res.status(201).json({ success: true, teacher });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).json({ success: false, error: 'Email already exists' });
+    } else {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+});
+
+app.get('/api/teachers', async (req, res) => {
+  try {
+    const teachers = await Teacher.find().select('-password');
+    res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Initialize default teachers
+app.post('/api/setup/default-teachers', async (req, res) => {
+  try {
+    // Check if teachers already exist
+    const existingTeachers = await Teacher.find();
+    if (existingTeachers.length > 0) {
+      return res.json({ 
+        success: true, 
+        message: 'Default teachers already exist',
+        count: existingTeachers.length 
+      });
+    }
+
+    // Create default teachers
+    const defaultTeachers = [
+      {
+        firstName: 'System',
+        lastName: 'Administrator',
+        email: 'admin@gcbc.edu',
+        department: 'Information Technology',
+        password: 'admin123'
+      },
+      {
+        firstName: 'Demo',
+        lastName: 'Teacher',
+        email: 'teacher@gcbc.edu',
+        department: 'Computer Science',
+        password: 'teacher123'
+      }
+    ];
+
+    await Teacher.insertMany(defaultTeachers);
+    res.json({ 
+      success: true, 
+      message: 'Default teachers created successfully',
+      count: defaultTeachers.length
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Student Routes
 app.get('/api/students', async (req, res) => {
   try {
     const students = await Student.find();

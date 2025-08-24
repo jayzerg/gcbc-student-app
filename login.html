@@ -199,21 +199,25 @@
             showLoading('login');
             
             try {
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Call MongoDB API for authentication
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
                 
-                // Check credentials against localStorage
-                const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
-                const teacher = teachers.find(t => t.email === email && t.password === password);
+                const data = await response.json();
                 
-                if (teacher) {
-                    // Store session
+                if (data.success) {
+                    // Store session in localStorage
                     localStorage.setItem('currentTeacher', JSON.stringify({
-                        id: teacher.id,
-                        firstName: teacher.firstName,
-                        lastName: teacher.lastName,
-                        email: teacher.email,
-                        department: teacher.department,
+                        id: data.teacher.id,
+                        firstName: data.teacher.firstName,
+                        lastName: data.teacher.lastName,
+                        email: data.teacher.email,
+                        department: data.teacher.department,
                         loginTime: new Date().toISOString()
                     }));
                     
@@ -225,12 +229,12 @@
                     }, 1500);
                     
                 } else {
-                    throw new Error('Invalid email or password');
+                    throw new Error(data.error || 'Invalid email or password');
                 }
                 
             } catch (error) {
                 hideLoading('login');
-                showMessage('error', '❌ ' + error.message);
+                showMessage('error', '❌ ' + (error.message || 'Network error. Please try again.'));
             }
         }
         

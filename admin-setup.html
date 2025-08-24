@@ -38,54 +38,75 @@
     </div>
     
     <script>
-        function seedDatabase() {
-            const defaultTeachers = [
-                {
-                    id: '1',
-                    firstName: 'System',
-                    lastName: 'Administrator',
-                    email: 'admin@gcbc.edu',
-                    department: 'Information Technology',
-                    password: 'admin123',
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: '2',
-                    firstName: 'Demo',
-                    lastName: 'Teacher',
-                    email: 'teacher@gcbc.edu',
-                    department: 'Computer Science',
-                    password: 'teacher123',
-                    createdAt: new Date().toISOString()
-                }
-            ];
+        async function seedDatabase() {
+            const resultDiv = document.getElementById('result');
             
-            // Clear existing teachers and set defaults
-            localStorage.setItem('teachers', JSON.stringify(defaultTeachers));
-            
-            document.getElementById('result').innerHTML = `
-                <div class="text-green-600 font-semibold">
-                    ✅ Default accounts created successfully!<br>
-                    You can now use the login credentials above.
-                </div>
-            `;
-        }
-        
-        // Auto-seed on page load if no teachers exist
-        document.addEventListener('DOMContentLoaded', function() {
-            const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
-            if (teachers.length === 0) {
-                document.getElementById('result').innerHTML = `
-                    <div class="text-yellow-600 font-semibold">
-                        ⚠️ No teacher accounts found.<br>
-                        Click "Create Default Accounts" to set up testing accounts.
+            try {
+                resultDiv.innerHTML = `
+                    <div class="text-blue-600 font-semibold">
+                        🔄 Creating default accounts...
                     </div>
                 `;
-            } else {
+                
+                // Call MongoDB API to create default teachers
+                const response = await fetch('/api/setup/default-teachers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 font-semibold">
+                            ✅ ${data.message}!<br>
+                            Total teachers: ${data.count}<br>
+                            You can now use the login credentials above.
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Failed to create accounts');
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="text-red-600 font-semibold">
+                        ❌ Error: ${error.message}<br>
+                        Please check your internet connection and try again.
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-check on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if teachers already exist
+                const response = await fetch('/api/teachers');
+                const teachers = await response.json();
+                
+                if (teachers.length === 0) {
+                    document.getElementById('result').innerHTML = `
+                        <div class="text-yellow-600 font-semibold">
+                            ⚠️ No teacher accounts found in database.<br>
+                            Click "Create Default Accounts" to set up testing accounts.
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="text-blue-600 font-semibold">
+                            ℹ️ Found ${teachers.length} teacher account(s) in database.<br>
+                            You can create new defaults or go to login.
+                        </div>
+                    `;
+                }
+            } catch (error) {
                 document.getElementById('result').innerHTML = `
-                    <div class="text-blue-600 font-semibold">
-                        ℹ️ Teacher accounts already exist.<br>
-                        You can create new defaults or go to login.
+                    <div class="text-red-600 font-semibold">
+                        ❌ Cannot connect to database.<br>
+                        Please check if the server is running.
                     </div>
                 `;
             }
