@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -12,7 +12,8 @@ app.use(express.json());
 app.use(express.static('.'));
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/gcbc_students')
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/gcbc_students';
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 

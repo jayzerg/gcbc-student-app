@@ -353,23 +353,6 @@ async function showGradingGrid(period) {
     grid.classList.remove('hidden');
 }
 
-// Toggle filter side panel
-function toggleFilters() {
-    const sidePanel = document.getElementById('filterSidePanel');
-    const overlay = document.getElementById('filterOverlay');
-    
-    sidePanel.classList.remove('translate-x-full');
-    overlay.classList.remove('hidden');
-}
-
-function closeFilters() {
-    const sidePanel = document.getElementById('filterSidePanel');
-    const overlay = document.getElementById('filterOverlay');
-    
-    sidePanel.classList.add('translate-x-full');
-    overlay.classList.add('hidden');
-}
-
 // ID column sorting
 let currentIdSort = 'default';
 
