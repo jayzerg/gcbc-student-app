@@ -96,18 +96,6 @@
             transform: translateY(0);
         }
         
-        /* Tab switching animation */
-        .tab-content {
-            opacity: 0;
-            transform: translateX(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .tab-content.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        
         /* Loading animation */
         .loading-spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
@@ -142,47 +130,37 @@
 </head>
 <body class="auth-gradient">
     <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass-card rounded-3xl p-8 w-full max-w-md">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm">
             <!-- Header Section -->
-            <div class="text-center mb-8">
-                <div class="flex justify-center mb-6">
-                    <img src="images/BCLOGO.png" alt="GCBC Logo" class="h-16 w-16 object-contain logo-enhanced">
+            <div class="text-center mb-6">
+                <div class="flex justify-center mb-4">
+                    <img src="images/BCLOGO.png" alt="GCBC Logo" class="h-12 w-12 object-contain logo-enhanced">
                 </div>
-                <h1 class="brand-title text-2xl font-black mb-2">W3BFORGE BCC</h1>
-                <p class="text-slate-600 font-semibold text-sm tracking-wide">Teacher Access Portal</p>
-            </div>
-            
-            <!-- Tab Navigation -->
-            <div class="flex bg-slate-100 rounded-xl p-1 mb-8">
-                <button id="loginTab" onclick="switchTab('login')" class="flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all duration-200 bg-white text-slate-700 shadow-sm">
-                    🔐 Teacher Login
-                </button>
-                <button id="adminTab" onclick="switchTab('admin')" class="flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all duration-200 text-slate-600 hover:text-slate-700">
-                    👑 Admin Access
-                </button>
+                <h1 class="brand-title text-xl font-black mb-1">W3BFORGE BCC</h1>
+                <p class="text-slate-600 font-semibold text-xs tracking-wide">Teacher Access Portal</p>
             </div>
             
             <!-- Messages Area -->
-            <div id="messageArea" class="hidden mb-6"></div>
+            <div id="messageArea" class="hidden mb-4"></div>
             
             <!-- Login Form -->
-            <div id="loginForm" class="tab-content active">
-                <form onsubmit="handleLogin(event)" autocomplete="off" class="space-y-6">
+            <div id="loginForm">
+                <form onsubmit="handleLogin(event)" autocomplete="off" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">📧 Email Address</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">📧 Email Address</label>
                         <input type="email" id="loginEmail" required autocomplete="off" 
-                               class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                               class="form-input w-full px-3 py-2 text-sm border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
                                placeholder="teacher@school.edu">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">🔒 Password</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">🔒 Password</label>
                         <input type="password" id="loginPassword" required autocomplete="off"
-                               class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                               class="form-input w-full px-3 py-2 text-sm border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
                                placeholder="Enter your password">
                     </div>
                     
-                    <button type="submit" id="loginButton" class="auth-button w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl">
+                    <button type="submit" id="loginButton" class="auth-button w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-lg text-sm">
                         <span class="flex items-center justify-center">
                             <span id="loginButtonText">🚀 Access Dashboard</span>
                             <div id="loginSpinner" class="loading-spinner ml-2 hidden"></div>
@@ -191,117 +169,8 @@
                 </form>
             </div>
             
-            <!-- Admin PIN Form -->
-            <div id="adminForm" class="tab-content">
-                <div id="adminPinSection">
-                    <form onsubmit="handleAdminPin(event)" autocomplete="off" class="space-y-6">
-                        <div class="text-center mb-6">
-                            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-red-100 to-orange-100 mb-4 shadow-lg border-4 border-red-300">
-                                <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H9m10-9a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-xl font-black text-gray-900 mb-2">Admin Verification</h3>
-                            <p class="text-sm text-gray-600 font-semibold">Enter 6-digit PIN to access admin panel</p>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">🔢 6-Digit PIN Code</label>
-                            <input type="password" id="adminPin" required autocomplete="off" maxlength="6" pattern="[0-9]{6}"
-                                   class="form-input w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-200 focus:border-red-500 text-center text-2xl font-bold tracking-widest"
-                                   placeholder="••••••" oninput="formatPinInput(this)">
-                        </div>
-                        
-                        <button type="submit" id="adminPinButton" class="auth-button w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 px-6 rounded-xl">
-                            <span class="flex items-center justify-center">
-                                <span id="adminPinButtonText">🔓 Verify PIN</span>
-                                <div id="adminPinSpinner" class="loading-spinner ml-2 hidden"></div>
-                            </span>
-                        </button>
-                    </form>
-                </div>
-                
-                <!-- Teacher Registration Form (hidden initially) -->
-                <div id="teacherRegistrationSection" class="hidden">
-                    <div class="text-center mb-6">
-                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-green-100 to-blue-100 mb-4 shadow-lg border-4 border-green-300">
-                            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-black text-gray-900 mb-2">Register New Teacher</h3>
-                        <p class="text-sm text-gray-600 font-semibold">Create teacher account for system access</p>
-                    </div>
-                    
-                    <form onsubmit="handleTeacherRegistration(event)" autocomplete="off" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">👤 First Name</label>
-                                <input type="text" id="teacherFirstName" required maxlength="50" autocomplete="off"
-                                       class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500"
-                                       placeholder="John" oninput="validateNameInput(this)">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">👤 Last Name</label>
-                                <input type="text" id="teacherLastName" required maxlength="50" autocomplete="off"
-                                       class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500"
-                                       placeholder="Doe" oninput="validateNameInput(this)">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">📧 Email Address</label>
-                            <input type="email" id="teacherEmail" required autocomplete="off"
-                                   class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500"
-                                   placeholder="teacher@school.edu">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">🏫 Department</label>
-                            <select id="teacherDepartment" required autocomplete="off"
-                                    class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500">
-                                <option value="">Select Department</option>
-                                <option value="Information Technology">Information Technology</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Multimedia Arts">Multimedia Arts</option>
-                                <option value="Business Administration">Business Administration</option>
-                                <option value="Education">Education</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">🔒 Password</label>
-                            <input type="password" id="teacherPassword" required autocomplete="off" minlength="6"
-                                   class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500"
-                                   placeholder="Minimum 6 characters">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">🔒 Confirm Password</label>
-                            <input type="password" id="teacherConfirmPassword" required autocomplete="off" minlength="6"
-                                   class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500"
-                                   placeholder="Confirm your password">
-                        </div>
-                        
-                        <div class="flex space-x-3 pt-4">
-                            <button type="submit" id="registerTeacherButton" class="flex-1 auth-button bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-xl">
-                                <span class="flex items-center justify-center">
-                                    <span id="registerTeacherButtonText">✨ Create Teacher</span>
-                                    <div id="registerTeacherSpinner" class="loading-spinner ml-2 hidden"></div>
-                                </span>
-                            </button>
-                            <button type="button" onclick="logoutAdmin()" class="flex-1 auth-button bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 px-6 rounded-xl">
-                                🚀 Back to Login
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
             <!-- Footer -->
-            <div class="mt-8 pt-6 border-t border-slate-200 text-center">
+            <div class="mt-6 pt-4 border-t border-slate-200 text-center">
                 <p class="text-xs text-slate-500 font-medium">
                     © 2025 W3BFORGE BCC System. All rights reserved.
                 </p>
@@ -310,11 +179,6 @@
     </div>
     
     <script>
-        // Admin PIN code
-        const ADMIN_PIN = '529777';
-        let currentTab = 'login';
-        let isAdminAuthenticated = false;
-        
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             // Check if already logged in
@@ -322,209 +186,7 @@
                 window.location.href = 'student-masterlist.html';
                 return;
             }
-            
-            // Initialize with login tab
-            switchTab('login');
         });
-        
-        // Tab switching functionality
-        function switchTab(tab) {
-            const loginTab = document.getElementById('loginTab');
-            const adminTab = document.getElementById('adminTab');
-            const loginForm = document.getElementById('loginForm');
-            const adminForm = document.getElementById('adminForm');
-            
-            // Clear any messages
-            hideMessage();
-            
-            // Reset admin state when switching away from admin
-            if (tab !== 'admin') {
-                isAdminAuthenticated = false;
-                resetAdminForm();
-            }
-            
-            if (tab === 'login') {
-                currentTab = 'login';
-                
-                // Update tab buttons
-                loginTab.classList.add('bg-white', 'text-slate-700', 'shadow-sm');
-                loginTab.classList.remove('text-slate-600');
-                adminTab.classList.remove('bg-white', 'text-slate-700', 'shadow-sm');
-                adminTab.classList.add('text-slate-600');
-                
-                // Switch forms
-                setTimeout(() => {
-                    loginForm.classList.add('active');
-                    adminForm.classList.remove('active');
-                }, 100);
-                
-            } else if (tab === 'admin') {
-                currentTab = 'admin';
-                
-                // Update tab buttons
-                adminTab.classList.add('bg-white', 'text-slate-700', 'shadow-sm');
-                adminTab.classList.remove('text-slate-600');
-                loginTab.classList.remove('bg-white', 'text-slate-700', 'shadow-sm');
-                loginTab.classList.add('text-slate-600');
-                
-                // Switch forms
-                setTimeout(() => {
-                    adminForm.classList.add('active');
-                    loginForm.classList.remove('active');
-                }, 100);
-            }
-        }
-        
-        // Reset admin form to PIN entry
-        function resetAdminForm() {
-            document.getElementById('adminPinSection').classList.remove('hidden');
-            document.getElementById('teacherRegistrationSection').classList.add('hidden');
-            document.getElementById('adminPin').value = '';
-            // Reset teacher registration form
-            const regForm = document.querySelector('#teacherRegistrationSection form');
-            if (regForm) regForm.reset();
-        }
-        
-        // Format PIN input (numbers only)
-        function formatPinInput(input) {
-            const value = input.value.replace(/[^0-9]/g, '');
-            input.value = value;
-        }
-        
-        // Handle admin PIN verification
-        async function handleAdminPin(event) {
-            event.preventDefault();
-            
-            const pin = document.getElementById('adminPin').value;
-            
-            // Show loading state
-            showLoading('adminPin');
-            
-            try {
-                // Simulate verification delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                if (pin === ADMIN_PIN) {
-                    isAdminAuthenticated = true;
-                    hideLoading('adminPin');
-                    showMessage('success', '✅ Admin access granted! You can now register teachers.');
-                    
-                    // Switch to teacher registration form
-                    setTimeout(() => {
-                        document.getElementById('adminPinSection').classList.add('hidden');
-                        document.getElementById('teacherRegistrationSection').classList.remove('hidden');
-                        hideMessage();
-                        // Focus on first field
-                        document.getElementById('teacherFirstName').focus();
-                    }, 2000);
-                    
-                } else {
-                    throw new Error('Invalid PIN code. Please try again.');
-                }
-                
-            } catch (error) {
-                hideLoading('adminPin');
-                showMessage('error', '❌ ' + error.message);
-                document.getElementById('adminPin').value = '';
-            }
-        }
-        
-        // Handle teacher registration
-        async function handleTeacherRegistration(event) {
-            event.preventDefault();
-            
-            if (!isAdminAuthenticated) {
-                showMessage('error', '❌ Unauthorized access. Please verify admin PIN first.');
-                return;
-            }
-            
-            const firstName = document.getElementById('teacherFirstName').value;
-            const lastName = document.getElementById('teacherLastName').value;
-            const email = document.getElementById('teacherEmail').value;
-            const department = document.getElementById('teacherDepartment').value;
-            const password = document.getElementById('teacherPassword').value;
-            const confirmPassword = document.getElementById('teacherConfirmPassword').value;
-            
-            // Validation
-            if (password !== confirmPassword) {
-                showMessage('error', '❌ Passwords do not match');
-                return;
-            }
-            
-            // Show loading state
-            showLoading('registerTeacher');
-            
-            try {
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Check if email already exists
-                const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
-                if (teachers.some(t => t.email === email)) {
-                    throw new Error('Email already registered');
-                }
-                
-                // Create new teacher
-                const newTeacher = {
-                    id: Date.now().toString(),
-                    firstName,
-                    lastName,
-                    email,
-                    department,
-                    password,
-                    createdAt: new Date().toISOString(),
-                    createdBy: 'admin'
-                };
-                
-                // Save to localStorage
-                teachers.push(newTeacher);
-                localStorage.setItem('teachers', JSON.stringify(teachers));
-                
-                hideLoading('registerTeacher');
-                showMessage('success', `✅ Teacher account created successfully for ${firstName} ${lastName}!`);
-                
-                // Reset form
-                document.querySelector('#teacherRegistrationSection form').reset();
-                
-                // Option to create another or go back to login
-                setTimeout(() => {
-                    if (confirm('Teacher created successfully! Would you like to create another teacher account?')) {
-                        hideMessage();
-                        document.getElementById('teacherFirstName').focus();
-                    } else {
-                        logoutAdmin();
-                    }
-                }, 3000);
-                
-            } catch (error) {
-                hideLoading('registerTeacher');
-                showMessage('error', '❌ ' + error.message);
-            }
-        }
-        
-        // Logout admin and return to login
-        function logoutAdmin() {
-            isAdminAuthenticated = false;
-            resetAdminForm();
-            switchTab('login');
-            showMessage('success', '✅ Returned to login page.');
-            setTimeout(hideMessage, 2000);
-        }
-        
-        // Name validation (no numbers)
-        function validateNameInput(input) {
-            const value = input.value;
-            const cleanedValue = value.replace(/[^a-zA-Z\s\-']/g, '');
-            
-            if (value !== cleanedValue) {
-                input.value = cleanedValue;
-                input.classList.add('border-red-500', 'bg-red-50');
-                
-                setTimeout(() => {
-                    input.classList.remove('border-red-500', 'bg-red-50');
-                }, 2000);
-            }
-        }
         
         // Login handler
         async function handleLogin(event) {
@@ -587,17 +249,7 @@
             if (button && buttonText && spinner) {
                 button.disabled = true;
                 button.classList.add('opacity-75', 'cursor-not-allowed');
-                
-                if (form === 'login') {
-                    buttonText.textContent = 'Signing in...';
-                } else if (form === 'adminPin') {
-                    buttonText.textContent = 'Verifying...';
-                } else if (form === 'registerTeacher') {
-                    buttonText.textContent = 'Creating...';
-                } else {
-                    buttonText.textContent = 'Processing...';
-                }
-                
+                buttonText.textContent = 'Signing in...';
                 spinner.classList.remove('hidden');
             }
         }
@@ -610,17 +262,7 @@
             if (button && buttonText && spinner) {
                 button.disabled = false;
                 button.classList.remove('opacity-75', 'cursor-not-allowed');
-                
-                if (form === 'login') {
-                    buttonText.textContent = '🚀 Access Dashboard';
-                } else if (form === 'adminPin') {
-                    buttonText.textContent = '🔓 Verify PIN';
-                } else if (form === 'registerTeacher') {
-                    buttonText.textContent = '✨ Create Teacher';
-                } else {
-                    buttonText.textContent = 'Submit';
-                }
-                
+                buttonText.textContent = '🚀 Access Dashboard';
                 spinner.classList.add('hidden');
             }
         }
