@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - W3BFORGE BCC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">Authentication Debug Tool</h1>
+        
+        <div class="space-y-4">
+            <button onclick="createDefaultAccounts()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Default Accounts
+            </button>
+            
+            <button onclick="checkTeachers()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Check Teachers in Storage
+            </button>
+            
+            <button onclick="testLogin()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                Test Login with admin@gcbc.edu
+            </button>
+            
+            <button onclick="clearStorage()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Clear All Storage
+            </button>
+        </div>
+        
+        <div id="output" class="mt-6 p-4 bg-gray-100 rounded-lg min-h-32">
+            <p class="text-gray-600">Click buttons above to test authentication...</p>
+        </div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += '<p class="text-sm mb-1">' + message + '</p>';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        function createDefaultAccounts() {
+            clearLog();
+            log('🔧 Creating default accounts...');
+            
+            const defaultTeachers = [
+                {
+                    id: '1',
+                    firstName: 'System',
+                    lastName: 'Administrator',
+                    email: 'admin@gcbc.edu',
+                    department: 'Information Technology',
+                    password: 'admin123',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: '2',
+                    firstName: 'Demo',
+                    lastName: 'Teacher',
+                    email: 'teacher@gcbc.edu',
+                    department: 'Computer Science',
+                    password: 'teacher123',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            try {
+                localStorage.setItem('teachers', JSON.stringify(defaultTeachers));
+                log('✅ Default accounts created successfully!');
+                log('📝 Admin: admin@gcbc.edu / admin123');
+                log('📝 Teacher: teacher@gcbc.edu / teacher123');
+            } catch (error) {
+                log('❌ Error creating accounts: ' + error.message);
+            }
+        }
+        
+        function checkTeachers() {
+            clearLog();
+            log('🔍 Checking teachers in localStorage...');
+            
+            try {
+                const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+                log('📊 Found ' + teachers.length + ' teachers in storage');
+                
+                if (teachers.length === 0) {
+                    log('⚠️ No teachers found! Use "Create Default Accounts" first.');
+                } else {
+                    teachers.forEach((teacher, index) => {
+                        log(`👤 Teacher ${index + 1}: ${teacher.firstName} ${teacher.lastName}`);
+                        log(`   📧 Email: ${teacher.email}`);
+                        log(`   🔒 Password: ${teacher.password}`);
+                        log(`   🏢 Department: ${teacher.department}`);
+                        log('');
+                    });
+                }
+            } catch (error) {
+                log('❌ Error reading teachers: ' + error.message);
+            }
+        }
+        
+        function testLogin() {
+            clearLog();
+            log('🔐 Testing login with admin@gcbc.edu...');
+            
+            const email = 'admin@gcbc.edu';
+            const password = 'admin123';
+            
+            try {
+                const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+                log(`📚 Total teachers in storage: ${teachers.length}`);
+                
+                const teacher = teachers.find(t => t.email === email && t.password === password);
+                
+                if (teacher) {
+                    log('✅ Login SUCCESS!');
+                    log(`👤 Found teacher: ${teacher.firstName} ${teacher.lastName}`);
+                    log(`📧 Email: ${teacher.email}`);
+                    log(`🏢 Department: ${teacher.department}`);
+                    
+                    // Test session creation
+                    const session = {
+                        id: teacher.id,
+                        firstName: teacher.firstName,
+                        lastName: teacher.lastName,
+                        email: teacher.email,
+                        department: teacher.department,
+                        loginTime: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('currentTeacher', JSON.stringify(session));
+                    log('🎫 Session created successfully!');
+                    
+                } else {
+                    log('❌ Login FAILED!');
+                    log('🔍 Looking for matching teachers...');
+                    
+                    teachers.forEach((t, i) => {
+                        const emailMatch = t.email === email;
+                        const passwordMatch = t.password === password;
+                        log(`Teacher ${i + 1}: email="${t.email}" (${emailMatch ? '✅' : '❌'}) password="${t.password}" (${passwordMatch ? '✅' : '❌'})`);
+                    });
+                }
+            } catch (error) {
+                log('❌ Error during login test: ' + error.message);
+            }
+        }
+        
+        function clearStorage() {
+            clearLog();
+            log('🧹 Clearing all localStorage...');
+            
+            try {
+                localStorage.removeItem('teachers');
+                localStorage.removeItem('currentTeacher');
+                log('✅ Storage cleared successfully!');
+            } catch (error) {
+                log('❌ Error clearing storage: ' + error.message);
+            }
+        }
+        
+        // Auto-check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                checkTeachers();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
