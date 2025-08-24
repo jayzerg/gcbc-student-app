@@ -119,8 +119,142 @@ function showSection(section) {
         document.getElementById('gradingSection').classList.remove('hidden');
     } else if (section === 'classrecord') {
         document.getElementById('classrecordSection').classList.remove('hidden');
+        // Load subjects when section is shown
+        loadSubjects();
     } else if (section === 'syllabus') {
         document.getElementById('syllabusSection').classList.remove('hidden');
+    }
+}
+
+// Subject management functions
+function openAddSubjectModal() {
+    const modal = document.getElementById('addSubjectModal');
+    modal.classList.remove('hidden');
+    
+    // Enhanced animation sequence
+    const modalContent = modal.querySelector('.bg-gradient-to-br');
+    modalContent.classList.remove('scale-95');
+    modalContent.classList.add('scale-100');
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on first field for better UX
+    setTimeout(() => {
+        document.getElementById('subjectCode').focus();
+    }, 300);
+}
+
+function closeAddSubjectModal() {
+    const modal = document.getElementById('addSubjectModal');
+    const modalContent = modal.querySelector('.bg-gradient-to-br');
+    
+    // Enhanced closing animation
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    
+    // Fade out and hide modal
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        
+        // Reset form for clean state
+        document.getElementById('addSubjectForm').reset();
+        
+        // Reset all counters
+        updateSubjectCounter('subjectCode', 'subjectCodeCounter', 20);
+        updateSubjectCounter('subjectTitle', 'subjectTitleCounter', 100);
+        updateSubjectCounter('subjectPrerequisites', 'subjectPrerequisitesCounter', 200);
+        updateSubjectCounter('subjectDescription', 'subjectDescriptionCounter', 500);
+    }, 300);
+}
+
+// Subject counter function
+function updateSubjectCounter(inputId, counterId, maxLength) {
+    const input = document.getElementById(inputId);
+    const counter = document.getElementById(counterId);
+    
+    if (!input || !counter) return;
+    
+    const currentLength = input.value.length;
+    
+    counter.textContent = `${currentLength}/${maxLength}`;
+    
+    // Change color when approaching limit
+    if (currentLength >= maxLength * 0.9) {
+        counter.classList.add('text-red-500', 'font-bold');
+        counter.classList.remove('text-purple-600', 'text-blue-600', 'text-gray-600');
+    } else {
+        counter.classList.remove('text-red-500', 'font-bold');
+        // Restore original color based on field
+        if (inputId.includes('Code')) {
+            counter.classList.add('text-purple-600');
+        } else if (inputId.includes('Title')) {
+            counter.classList.add('text-blue-600');
+        } else {
+            counter.classList.add('text-gray-600');
+        }
+    }
+}
+
+// Load subjects function
+function loadSubjects() {
+    try {
+        const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+        displaySubjects(subjects);
+    } catch (error) {
+        console.error('Error loading subjects:', error);
+    }
+}
+
+// Display subjects function
+function displaySubjects(subjects) {
+    const tbody = document.getElementById('subjectsTableBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (subjects.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500 border border-gray-300">No subjects added yet. Click "Add New Subject" to get started.</td></tr>';
+        return;
+    }
+    
+    subjects.forEach((subject, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td class="px-4 py-3 border border-gray-300 text-sm font-semibold text-gray-900 text-center">${index + 1}</td>
+            <td class="px-4 py-3 border border-gray-300 text-sm font-bold text-purple-600">${subject.code}</td>
+            <td class="px-4 py-3 border border-gray-300 text-sm font-semibold text-gray-900">${subject.title}</td>
+            <td class="px-4 py-3 border border-gray-300 text-sm font-semibold text-center text-green-600">${subject.units}</td>
+            <td class="px-4 py-3 border border-gray-300 text-center">
+                <button onclick="editSubject('${subject.id}')" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded mr-1 text-sm font-bold" title="Edit Subject">
+                    ✏️
+                </button>
+                <button onclick="deleteSubject('${subject.id}')" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded text-sm font-bold" title="Delete Subject">
+                    🗑️
+                </button>
+            </td>
+        `;
+    });
+}
+
+// Edit subject function (placeholder)
+function editSubject(id) {
+    alert('Edit subject functionality will be implemented in the next update.');
+}
+
+// Delete subject function
+function deleteSubject(id) {
+    if (confirm('Are you sure you want to delete this subject?')) {
+        try {
+            let subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+            subjects = subjects.filter(subject => subject.id !== id);
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+            loadSubjects();
+            alert('Subject deleted successfully!');
+        } catch (error) {
+            alert('Error deleting subject: ' + error.message);
+        }
     }
 }
 
@@ -747,4 +881,42 @@ document.addEventListener('click', function(event) {
             dropdown.classList.add('hidden');
         }
     });
+});
+
+// Subject form submission event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const addSubjectForm = document.getElementById('addSubjectForm');
+    if (addSubjectForm) {
+        addSubjectForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const subject = {
+                code: document.getElementById('subjectCode').value,
+                title: document.getElementById('subjectTitle').value,
+                units: parseInt(document.getElementById('subjectUnits').value),
+                semester: document.getElementById('subjectSemester').value,
+                yearLevel: document.getElementById('subjectYearLevel').value,
+                prerequisites: document.getElementById('subjectPrerequisites').value,
+                description: document.getElementById('subjectDescription').value
+            };
+
+            try {
+                // For now, we'll use localStorage until backend is ready
+                let subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+                subject.id = Date.now().toString(); // Simple ID generation
+                subjects.push(subject);
+                localStorage.setItem('subjects', JSON.stringify(subjects));
+                
+                // Show success message
+                alert(`Subject "${subject.code} - ${subject.title}" added successfully!`);
+                
+                // Close modal and reload subjects
+                closeAddSubjectModal();
+                loadSubjects();
+                
+            } catch (error) {
+                alert('Error adding subject: ' + error.message);
+            }
+        });
+    }
 });
