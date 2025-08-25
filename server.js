@@ -47,7 +47,7 @@ const Teacher = mongoose.model('Teacher', teacherSchema);
 
 // Serve main HTML file for root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  res.sendFile(path.join(__dirname, 'student-masterlist.html'));
 });
 
 // Route for dashboard (protected)
@@ -55,10 +55,7 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'student-masterlist.html'));
 });
 
-// Route for admin setup
-app.get('/admin-setup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin-setup.html'));
-});
+
 
 // Teacher Authentication Routes
 app.post('/api/auth/login', async (req, res) => {
@@ -200,8 +197,8 @@ app.get('*', (req, res) => {
     return res.status(404).json({ error: 'API route not found' });
   }
   
-  // For all other routes, serve the login page
-  res.sendFile(path.join(__dirname, 'login.html'));
+  // For all other routes, serve the student masterlist
+  res.sendFile(path.join(__dirname, 'student-masterlist.html'));
 });
 
 

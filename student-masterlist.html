@@ -1293,7 +1293,7 @@
         // Authentication check on page load
         document.addEventListener('DOMContentLoaded', function() {
             if (!isAuthenticated()) {
-                window.location.href = 'login.html';
+                // Authentication removed - no login redirect
                 return;
             }
             
@@ -1327,7 +1327,7 @@
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('currentTeacher');
-                window.location.href = 'login.html';
+                // Authentication removed - no login redirect
             }
         }
         

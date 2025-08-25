@@ -21,7 +21,7 @@ function displayWelcomeMessage() {
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('currentTeacher');
-        window.location.href = 'login.html';
+        // Authentication removed - no login redirect
     }
 }
 
@@ -42,7 +42,7 @@ function updateTeacherInfo() {
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication first
     if (!isAuthenticated()) {
-        window.location.href = 'login.html';
+        // Authentication removed - no login redirect
         return;
     }
     
